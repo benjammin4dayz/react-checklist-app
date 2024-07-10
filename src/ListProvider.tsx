@@ -78,5 +78,15 @@ function saveList(list: ListItem[]) {
 
 function restoreSavedList(): ListItem[] {
   const list = localStorage.getItem('list');
-  return list ? (JSON.parse(list) as ListItem[]) : [];
+  return list
+    ? (JSON.parse(list) as ListItem[])
+    : import.meta.env.DEV
+    ? [
+        { id: '1', text: 'Sleep', checked: false },
+        { id: '2', text: 'Coffee', checked: true },
+        { id: '3', text: 'Dev', checked: true },
+        { id: '4', text: '', checked: false },
+        { id: '5', text: 'More than twenty-five characters', checked: false },
+      ]
+    : [];
 }

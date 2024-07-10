@@ -28,6 +28,5 @@ npm start
 Icons used in this project:
 
 - [Eucalyp](https://creativemarket.com/eucalyp)
-- [Tabler](https://tablericons.com/)
 
 <!-- https://www.flaticon.com/free-icons/checklist -->
