@@ -29,7 +29,11 @@ export const AddTaskDialog: FC = () => {
 
   return (
     <>
-      <Button sx={{ width: '100%', mt: 3 }} onClick={toggleOpen}>
+      <Button
+        variant={'contained'}
+        sx={{ width: '100%', mt: 3 }}
+        onClick={toggleOpen}
+      >
         Add Task
       </Button>
       <Dialog open={open} onClose={onClose}>
@@ -50,7 +54,13 @@ export const AddTaskDialog: FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={onSubmit}>Add</Button>
+          <Button
+            variant={'contained'}
+            onClick={onSubmit}
+            disabled={!textFieldValue}
+          >
+            Create
+          </Button>
         </DialogActions>
       </Dialog>
     </>
