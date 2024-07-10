@@ -184,7 +184,14 @@ export const TaskCard: FC<TaskCard> = ({ id, checked, value }) => {
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
     >
-      <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+      <CardContent
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          overflow: 'hidden',
+        }}
+      >
         <TaskStatusIcon
           checked={checked}
           onClick={handleCardClick}
@@ -194,14 +201,16 @@ export const TaskCard: FC<TaskCard> = ({ id, checked, value }) => {
         <Typography
           variant={'h5'}
           component={'div'}
-          style={{ marginLeft: '0.5rem' }}
+          sx={{
+            flex: '1',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}
           title={value}
         >
-          {value.slice(0, 25)}
+          {value}
         </Typography>
-        <div style={{ marginLeft: 'auto' }}>
-          <HamburgerDropdown id={id} />
-        </div>
+        <HamburgerDropdown id={id} />
       </CardContent>
     </Card>
   );
