@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import ConfettiExplosion from 'react-confetti-explosion';
 import type { ListContext, ListItem, FCWithChildren } from './typings';
 
 const ListContext = createContext<ListContext>(null);
@@ -21,6 +22,14 @@ const useListContext = () => {
 
 const ListProvider: FCWithChildren = ({ children }) => {
   const [list, setList] = useState<ListItem[]>(restoreSavedList());
+  const [_isExploding, _setIsExploding] = useState(false);
+
+  const _handleExplode = (state: boolean) => {
+    _setIsExploding(false);
+    if (state === false) {
+      _setIsExploding(true);
+    }
+  };
 
   // create
   const createListItem = useCallback((text: string) => {
@@ -39,10 +48,14 @@ const ListProvider: FCWithChildren = ({ children }) => {
     return getListItem(id) || null;
   };
   const toggleListItem = (id: string) => {
-    setList(list =>
-      list.map(l => (l.id === id ? { ...l, checked: !l.checked } : l))
-    );
-    return getListItem(id) || null;
+    const item = getListItem(id);
+    if (item) {
+      _handleExplode(item.checked);
+      setList(list =>
+        list.map(l => (l.id === id ? { ...l, checked: !l.checked } : l))
+      );
+    }
+    return item || null;
   };
 
   // delete
@@ -65,6 +78,25 @@ const ListProvider: FCWithChildren = ({ children }) => {
         deleteListItem,
       }}
     >
+      {_isExploding && (
+        // TODO: improve this implementation.
+        // use a ref or move it elsewhere? memoize the list and use effects?
+        <div
+          style={{
+            position: 'fixed',
+            top: '0',
+            left: '50%',
+            transform: 'translate(0, -50%)',
+            pointerEvents: 'none',
+          }}
+        >
+          <ConfettiExplosion
+            duration={1750}
+            particleCount={200}
+            onComplete={() => _setIsExploding(false)}
+          />
+        </div>
+      )}
       {children}
     </ListContext.Provider>
   );
