@@ -34,17 +34,17 @@ const ListProvider: FCWithChildren = ({ children }) => {
   // create
   const createListItem = useCallback((text: string) => {
     const newId = uuidv4();
-    setList(list => [...list, { id: newId, text, checked: false }]);
+    setList(list => [...list, { __id: newId, text, checked: false }]);
   }, []);
 
   // read
   const getListItem = (id: string) => {
-    return list.find(l => l.id === id) || null;
+    return list.find(l => l.__id === id) || null;
   };
 
   // update
   const updateListItem = (id: string, text: string) => {
-    setList(list => list.map(l => (l.id === id ? { ...l, text } : l)));
+    setList(list => list.map(l => (l.__id === id ? { ...l, text } : l)));
     return getListItem(id) || null;
   };
   const toggleListItem = (id: string) => {
@@ -52,7 +52,7 @@ const ListProvider: FCWithChildren = ({ children }) => {
     if (item) {
       _handleExplode(item.checked);
       setList(list =>
-        list.map(l => (l.id === id ? { ...l, checked: !l.checked } : l))
+        list.map(l => (l.__id === id ? { ...l, checked: !l.checked } : l))
       );
     }
     return item || null;
@@ -60,7 +60,7 @@ const ListProvider: FCWithChildren = ({ children }) => {
 
   // delete
   const deleteListItem = (id: string) => {
-    setList(list => list.filter(l => l.id !== id));
+    setList(list => list.filter(l => l.__id !== id));
   };
 
   useEffect(() => {
@@ -71,6 +71,7 @@ const ListProvider: FCWithChildren = ({ children }) => {
     <ListContext.Provider
       value={{
         list,
+        setList,
         createListItem,
         getListItem,
         updateListItem,
@@ -114,11 +115,15 @@ function restoreSavedList(): ListItem[] {
     ? (JSON.parse(list) as ListItem[])
     : import.meta.env.DEV
     ? [
-        { id: '1', text: 'Sleep', checked: false },
-        { id: '2', text: 'Coffee', checked: true },
-        { id: '3', text: 'Dev', checked: true },
-        { id: '4', text: '', checked: false },
-        { id: '5', text: 'More than twenty-five characters', checked: false },
+        { __id: 'sl33p', text: 'Sleep', checked: false },
+        { __id: 'c0f3', text: 'Coffee', checked: true },
+        { __id: 'd3v', text: 'Dev', checked: true },
+        { __id: 'f0u4', text: '', checked: false },
+        {
+          __id: 'f1v3',
+          text: 'More than twenty-five characters',
+          checked: false,
+        },
       ]
     : [];
 }

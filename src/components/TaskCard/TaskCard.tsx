@@ -1,17 +1,33 @@
 import { useEffect, useState, type FC } from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useListContext } from '../../ListProvider';
-import { HamburgerDropdown } from './HamburgerDropdown';
 import { TaskStatusIcon } from './TaskStatusIcon';
+import { ActionsGrid } from './ActionsGrid';
 
 type TaskCardProps = {
   id: string;
+  sortableId: string;
   checked: boolean;
   value: string;
 } & JSX.IntrinsicElements['div'];
 
-export const TaskCard: FC<TaskCardProps> = ({ id, checked, value }) => {
+export const TaskCard: FC<TaskCardProps> = ({
+  id,
+  sortableId,
+  checked,
+  value,
+}) => {
   const { toggleListItem } = useListContext();
+
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: sortableId });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const [isHovered, setIsHovered] = useState(false);
   const [cardElevation, setCardElevation] = useState(7);
@@ -32,9 +48,12 @@ export const TaskCard: FC<TaskCardProps> = ({ id, checked, value }) => {
   return (
     <Card
       elevation={cardElevation}
-      component={'div'}
       onMouseOver={handleMouseOver}
       onMouseLeave={handleMouseLeave}
+      ref={setNodeRef}
+      style={{ ...style }}
+      {...attributes}
+      {...listeners}
     >
       <CardContent
         sx={{
@@ -62,7 +81,7 @@ export const TaskCard: FC<TaskCardProps> = ({ id, checked, value }) => {
         >
           {value}
         </Typography>
-        <HamburgerDropdown id={id} />
+        <ActionsGrid id={id} />
       </CardContent>
     </Card>
   );
