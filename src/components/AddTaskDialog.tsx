@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { FC, KeyboardEvent, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -12,19 +12,28 @@ import { useListContext } from '../ListProvider';
 export const AddTaskDialog: FC = () => {
   const { createListItem } = useListContext();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [textFieldValue, setTextFieldValue] = useState<string>('');
 
   const toggleOpen = () => setOpen(!open);
 
-  const onClose = () => {
+  const closeDialog = () => {
     setOpen(false);
     setTextFieldValue('');
   };
 
-  const onSubmit = () => {
-    if (textFieldValue) createListItem(textFieldValue);
-    onClose();
+  const submitForm = () => {
+    if (textFieldValue) {
+      createListItem(textFieldValue);
+      closeDialog();
+    }
+  };
+
+  const handleEnterKeySubmit = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitForm();
+    }
   };
 
   return (
@@ -36,7 +45,7 @@ export const AddTaskDialog: FC = () => {
       >
         Add Task
       </Button>
-      <Dialog open={open} onClose={onClose}>
+      <Dialog open={open} onClose={closeDialog}>
         <DialogTitle>Add Task</DialogTitle>
         <DialogContent>
           <TextField
@@ -50,13 +59,14 @@ export const AddTaskDialog: FC = () => {
             autoComplete="off"
             value={textFieldValue}
             onChange={e => setTextFieldValue(e.target.value)}
+            onKeyDown={handleEnterKeySubmit}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={closeDialog}>Cancel</Button>
           <Button
             variant={'contained'}
-            onClick={onSubmit}
+            onClick={submitForm}
             disabled={!textFieldValue}
           >
             Create
