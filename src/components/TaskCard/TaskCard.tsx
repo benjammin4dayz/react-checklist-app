@@ -1,7 +1,9 @@
-import { useEffect, useState, type FC } from 'react';
+import { CSSProperties, FC, MouseEvent, useState } from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { SyntheticListenerMap } from '@dnd-kit/core/dist/hooks/utilities';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useListContext } from '../../ListProvider';
 import { TaskStatusIcon } from './TaskStatusIcon';
 import { ActionsGrid } from './ActionsGrid';
@@ -24,36 +26,52 @@ export const TaskCard: FC<TaskCardProps> = ({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: sortableId });
 
-  const style = {
+  const [cardElevation, setCardElevation] = useState<number>(7);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+  const draggableStyle: CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
-  const [isHovered, setIsHovered] = useState(false);
-  const [cardElevation, setCardElevation] = useState(7);
+  const draggableListeners: SyntheticListenerMap = {
+    ...listeners,
+    onMouseDown: () => {
+      // immediately close the expando before applying any draggable transforms
+      setIsExpanded(false);
+    },
+  };
 
-  useEffect(() => {
-    if (isHovered) {
+  const cardListeners = {
+    onMouseOver: () => {
       setCardElevation(10);
-    } else {
+    },
+    onMouseLeave: () => {
       setCardElevation(7);
-    }
-  }, [isHovered]);
+      setIsExpanded(false);
+    },
+    onClick: () => {
+      setIsExpanded(true);
+    },
+  };
 
-  const handleMouseOver = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
+  const handleDragHandleClick = () => {
+    setIsExpanded(false);
+  };
 
-  const handleCardClick = () => toggleListItem(id);
+  const handleTaskStatusChange = (e: MouseEvent<HTMLDivElement>) => {
+    // don't open the expando when toggling a task
+    e.stopPropagation();
+    toggleListItem(id);
+  };
 
   return (
     <Card
+      {...cardListeners}
       elevation={cardElevation}
-      onMouseOver={handleMouseOver}
-      onMouseLeave={handleMouseLeave}
       ref={setNodeRef}
-      style={{ ...style }}
-      {...attributes}
-      {...listeners}
+      style={{ ...draggableStyle }}
+      sx={{ cursor: isExpanded ? 'default' : 'pointer' }}
     >
       <CardContent
         sx={{
@@ -65,23 +83,34 @@ export const TaskCard: FC<TaskCardProps> = ({
       >
         <TaskStatusIcon
           checked={checked}
-          onClick={handleCardClick}
+          onClick={handleTaskStatusChange}
           style={{ cursor: 'pointer' }}
           title={`Mark task as ${checked ? 'incomplete' : 'complete'}`}
         />
         <Typography
           variant={'h5'}
-          component={'div'}
           sx={{
             flex: '1',
-            whiteSpace: 'nowrap',
+            whiteSpace: isExpanded ? 'normal' : 'nowrap',
+            textOverflow: 'ellipsis',
+            wordBreak: 'break-all',
             overflow: 'hidden',
           }}
           title={value}
         >
           {value}
         </Typography>
-        <ActionsGrid id={id} />
+        {isExpanded && <ActionsGrid id={id} />}
+        <DragIndicatorIcon
+          {...attributes}
+          {...draggableListeners}
+          sx={{
+            cursor: 'grab',
+            ':focus': { outline: 'none' },
+            ':active': { cursor: 'grabbing' },
+          }}
+          onClick={handleDragHandleClick}
+        />
       </CardContent>
     </Card>
   );
