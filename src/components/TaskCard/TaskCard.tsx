@@ -108,6 +108,7 @@ export const TaskCard: FC<TaskCardProps> = ({
             cursor: 'grab',
             ':focus': { outline: 'none' },
             ':active': { cursor: 'grabbing' },
+            touchAction: 'none',
           }}
           onClick={handleDragHandleClick}
         />
