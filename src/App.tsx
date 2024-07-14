@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Paper } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
 import {
   DndContext,
   closestCenter,
@@ -22,7 +22,7 @@ import styles from './App.module.css';
 import { AddTaskDialog } from './components/AddTaskDialog';
 
 function App() {
-  const { toggleListItem, list, setList } = useListContext();
+  const { list, setList } = useListContext();
 
   const [items, setItems] = useState(
     list.map((item, index) => ({ id: `${index}`, ...item }))
@@ -44,25 +44,18 @@ function App() {
   );
 
   return (
-    <Box
-      className={styles.App}
-      component={'div'}
-      sx={{ backgroundColor: 'background.default' }}
-    >
-      <Paper style={{ width: '400px', padding: '1rem' }} elevation={3}>
-        <header className="App-header">
-          <h1>Tasks</h1>
-        </header>
+    <Box className={styles.App} sx={{ backgroundColor: 'background.default' }}>
+      <Paper className={styles.taskPanel} elevation={3}>
+        <Typography className={styles.title} variant="h3">
+          Tasks
+        </Typography>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <ul style={{ display: 'grid', gap: '0.7rem' }}>
-            <SortableContext
-              items={items}
-              strategy={verticalListSortingStrategy}
-            >
+          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+            <ul className={styles.taskList}>
               {items.map(item => (
                 <TaskCard
                   key={item.__id}
@@ -70,11 +63,10 @@ function App() {
                   sortableId={item.id}
                   checked={item.checked}
                   value={item.text}
-                  onClick={() => toggleListItem(item.__id)}
                 />
               ))}
-            </SortableContext>
-          </ul>
+            </ul>
+          </SortableContext>
         </DndContext>
         <AddTaskDialog />
       </Paper>

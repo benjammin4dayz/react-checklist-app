@@ -1,11 +1,6 @@
-import {
-  useEffect,
-  useState,
-  type ComponentPropsWithoutRef,
-  type FC,
-} from 'react';
+import { ComponentPropsWithoutRef, FC, useEffect, useState } from 'react';
 import { Avatar } from '@mui/material';
-import { CheckCircle } from '@mui/icons-material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 type TaskStatusIconProps = {
   checked: boolean;
@@ -23,11 +18,6 @@ export const TaskStatusIcon: FC<TaskStatusIconProps> = ({
   const [isHot, setIsHot] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseOut = () => setIsHovered(false);
-  const handleTouchStart = () => setIsHovered(true);
-  const handleTouchEnd = () => setIsHovered(false);
-
   useEffect(() => {
     setIsHot(true);
 
@@ -41,31 +31,27 @@ export const TaskStatusIcon: FC<TaskStatusIconProps> = ({
   }, [checked, colorChangeCooldown]);
 
   useEffect(() => {
-    if (checked && isHovered && !isHot) {
-      setIconColor('warning.main');
-    } else if (isHovered && !isHot) {
-      setIconColor('primary.main');
-    } else if (checked) {
-      setIconColor('success.main');
+    if (checked) {
+      setIconColor(isHovered && !isHot ? 'warning.main' : 'success.main');
     } else {
-      setIconColor('gray');
+      setIconColor(isHovered && !isHot ? 'primary.main' : 'gray');
     }
   }, [checked, isHovered, isHot]);
 
   return (
     <Avatar
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseOut}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setIsHovered(false)}
+      {...restProps}
       sx={{
         backgroundColor: iconColor,
         opacity: checked ? 1 : 0.7,
         transition: `background-color ${colorChangeCooldown / 2}ms ease`,
       }}
-      {...restProps}
     >
-      <CheckCircle sx={{ color: 'text.primary' }} />
+      <CheckCircleIcon sx={{ color: 'text.primary' }} />
     </Avatar>
   );
 };

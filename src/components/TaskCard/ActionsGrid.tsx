@@ -1,4 +1,4 @@
-import { useEffect, useState, type FC } from 'react';
+import { FC, useState } from 'react';
 import { Box, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useListContext } from '../../ListProvider';
@@ -6,19 +6,7 @@ import { useListContext } from '../../ListProvider';
 export const ActionsGrid: FC<{ id: string }> = ({ id }) => {
   const { deleteListItem } = useListContext();
 
-  const [color, setColor] = useState('pallette.primary.main');
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
-
-  useEffect(() => {
-    if (isHovered) {
-      setColor('error.main');
-    } else {
-      setColor('gray');
-    }
-  }, [isHovered]);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   return (
     <Box
@@ -31,9 +19,9 @@ export const ActionsGrid: FC<{ id: string }> = ({ id }) => {
       }}
     >
       <IconButton
-        sx={{ color }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        sx={{ color: isHovered ? 'error.main' : 'gray' }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         onClick={() => deleteListItem(id)}
       >
         <DeleteIcon />

@@ -1,4 +1,11 @@
-import { CSSProperties, FC, MouseEvent, useState } from 'react';
+import {
+  CSSProperties,
+  useEffect,
+  FC,
+  MouseEvent,
+  useRef,
+  useState,
+} from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -29,6 +36,17 @@ export const TaskCard: FC<TaskCardProps> = ({
   const [cardElevation, setCardElevation] = useState<number>(7);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
+  const textRef = useRef<HTMLDivElement>(null);
+  const [isTextOverflowing, setIsTextOverflowing] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (textRef.current) {
+      setIsTextOverflowing(
+        textRef.current.scrollWidth > textRef.current.clientWidth
+      );
+    }
+  }, [textRef]);
+
   const draggableStyle: CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -55,10 +73,6 @@ export const TaskCard: FC<TaskCardProps> = ({
     },
   };
 
-  const handleDragHandleClick = () => {
-    setIsExpanded(false);
-  };
-
   const handleTaskStatusChange = (e: MouseEvent<HTMLDivElement>) => {
     // don't open the expando when toggling a task
     e.stopPropagation();
@@ -68,6 +82,7 @@ export const TaskCard: FC<TaskCardProps> = ({
   return (
     <Card
       {...cardListeners}
+      component={'li'}
       elevation={cardElevation}
       ref={setNodeRef}
       style={{ ...draggableStyle }}
@@ -88,15 +103,17 @@ export const TaskCard: FC<TaskCardProps> = ({
           title={`Mark task as ${checked ? 'incomplete' : 'complete'}`}
         />
         <Typography
-          variant={'h5'}
+          ref={textRef}
           sx={{
             flex: '1',
             whiteSpace: isExpanded ? 'normal' : 'nowrap',
             textOverflow: 'ellipsis',
-            wordBreak: 'break-all',
+            overflowWrap: 'break-word',
             overflow: 'hidden',
+            textDecoration: checked && !isExpanded ? 'line-through' : 'none',
           }}
-          title={value}
+          title={isExpanded ? value : 'Click to expand'}
+          variant={isTextOverflowing ? (isExpanded ? 'body1' : 'h6') : 'h6'}
         >
           {value}
         </Typography>
@@ -110,7 +127,6 @@ export const TaskCard: FC<TaskCardProps> = ({
             ':active': { cursor: 'grabbing' },
             touchAction: 'none',
           }}
-          onClick={handleDragHandleClick}
         />
       </CardContent>
     </Card>
