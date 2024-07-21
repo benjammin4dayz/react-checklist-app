@@ -9,6 +9,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended-type-checked',
     // 'plugin:@typescript-eslint/strict-type-checked',
     'plugin:react-hooks/recommended',
+    'plugin:storybook/recommended',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parserOptions: {
