@@ -50,6 +50,7 @@ export const TaskStatusIcon: FC<TaskStatusIconProps> = ({
         opacity: checked ? 1 : 0.7,
         transition: `background-color ${colorChangeCooldown / 2}ms ease`,
       }}
+      variant={'rounded'}
     >
       <CheckCircleIcon sx={{ color: 'text.primary' }} />
     </Avatar>
